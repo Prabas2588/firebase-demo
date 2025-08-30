@@ -1,63 +1,103 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Simple Login</title>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Signup with Firebase</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      height: 100vh;
+      justify-content: center;
+      align-items: center;
+      background: #f0f0f0;
+    }
+    .form-container {
+      background: white;
+      padding: 20px 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      width: 300px;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    button:hover {
+      background: #45a049;
+    }
+    p {
+      text-align: center;
+      color: red;
+    }
+  </style>
 </head>
 <body>
-  <h2>Login Page</h2>
 
-  <input type="email" id="email" placeholder="Email"><br><br>
-  <input type="password" id="password" placeholder="Password"><br><br>
+  <div class="form-container">
+    <h2>Sign Up</h2>
+    <input type="email" id="email" placeholder="Email" required>
+    <input type="password" id="password" placeholder="Password" required>
+    <button onclick="signup()">Sign Up</button>
+    <p id="message"></p>
+  </div>
 
-  <button onclick="login()">Login</button>
-  <button onclick="signup()">Sign Up</button>
+  <!-- Firebase SDK -->
+  <script type="module">
+    // Import Firebase
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword } 
+      from "https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js";
 
-  <h3 id="msg"></h3>
-
-  <script>
-    // 🔹 Replace with your Firebase config
+    // Your Firebase Config (replace with your project values)
   // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyA6wwc2n5glKZUGZbG_HLVs4nSPdaZL4bg",
-  authDomain: "fir-demo-61d34.firebaseapp.com",
-  projectId: "fir-demo-61d34",
-  storageBucket: "fir-demo-61d34.firebasestorage.app",
-  messagingSenderId: "793037641774",
-  appId: "1:793037641774:web:364153926437cd7811e7bf",
-  measurementId: "G-1S8EWEW6B5"
+  apiKey: "AIzaSyDnRszdETK2IsOBdrT9-eoWX9YhE_0Evls",
+  authDomain: "demm0-dc848.firebaseapp.com",
+  projectId: "demm0-dc848",
+  storageBucket: "demm0-dc848.firebasestorage.app",
+  messagingSenderId: "207657752175",
+  appId: "1:207657752175:web:612575c81f154ce84f5f9a",
+  measurementId: "G-TG13YLZ6ZG"
 };
 
-    // 🔹 Initialize Firebase
-    const app = firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
 
-    // 🔹 Login Function
-    function login() {
+    // Signup function
+    window.signup = function() {
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
+      const message = document.getElementById("message");
 
-      auth.signInWithEmailAndPassword(email, password)
-        .then(() => {
-          document.getElementById("msg").innerText = "Hai 👋";
+      createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          message.style.color = "green";
+          message.textContent = "Signup successful ✅";
+          console.log("User:", userCredential.user);
         })
-        .catch(error => {
-          document.getElementById("msg").innerText = error.message;
-        });
-    }
-
-    // 🔹 Sign Up Function
-    function signup() {
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-
-      auth.createUserWithEmailAndPassword(email, password)
-        .then(() => {
-          document.getElementById("msg").innerText = "Account created ✅ Now login!";
-        })
-        .catch(error => {
-          document.getElementById("msg").innerText = error.message;
+        .catch((error) => {
+          message.style.color = "red";
+          message.textContent = error.message;
         });
     }
   </script>
