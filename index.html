@@ -1,96 +1,63 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>Event Connect</title>
+  <title>Simple Login</title>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
 </head>
 <body>
-  <h1>🎉 Event Connect</h1>
-  <p>Discover | Register | Share Events</p>
+  <h2>Login Page</h2>
 
-  <!-- Login Section -->
-  <h3>Login / Signup</h3>
-  <input type="email" id="email" placeholder="Enter email">
-  <input type="password" id="password" placeholder="Enter password">
-  <button onclick="signup()">Sign Up</button>
+  <input type="email" id="email" placeholder="Email"><br><br>
+  <input type="password" id="password" placeholder="Password"><br><br>
+
   <button onclick="login()">Login</button>
-  <button onclick="logout()">Logout</button>
+  <button onclick="signup()">Sign Up</button>
 
-  <hr>
+  <h3 id="msg"></h3>
 
-  <!-- Event Registration -->
-  <h3>Register for an Event</h3>
-  <input type="text" id="eventName" placeholder="Enter Event Name">
-  <button onclick="registerEvent()">Register</button>
-
-  <ul id="eventList"></ul>
-
-  <!-- Firebase SDK -->
-  <script type="module">
-    // Import Firebase
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } 
-      from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, addDoc, collection, getDocs } 
-      from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-    // 🔹 Firebase Config (mee Firebase project config ikkada paste cheyyali)
+  <script>
+    // 🔹 Replace with your Firebase config
     const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_PROJECT_ID.appspot.com",
-      messagingSenderId: "XXXXXXX",
-      appId: "YOUR_APP_ID"
+      apiKey: "YOUR_KEY",
+      authDomain: "YOUR_PROJECT.firebaseapp.com",
+      projectId: "YOUR_PROJECT",
+      storageBucket: "YOUR_PROJECT.appspot.com",
+      messagingSenderId: "123456789",
+      appId: "APP_ID"
     };
 
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+    // 🔹 Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
 
-    // Signup
-    async function signup() {
+    // 🔹 Login Function
+    function login() {
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
-      await createUserWithEmailAndPassword(auth, email, password);
-      alert("Signup Success!");
+
+      auth.signInWithEmailAndPassword(email, password)
+        .then(() => {
+          document.getElementById("msg").innerText = "Hai 👋";
+        })
+        .catch(error => {
+          document.getElementById("msg").innerText = error.message;
+        });
     }
 
-    // Login
-    async function login() {
+    // 🔹 Sign Up Function
+    function signup() {
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
-      await signInWithEmailAndPassword(auth, email, password);
-      alert("Login Success!");
-    }
 
-    // Logout
-    async function logout() {
-      await signOut(auth);
-      alert("Logged Out");
+      auth.createUserWithEmailAndPassword(email, password)
+        .then(() => {
+          document.getElementById("msg").innerText = "Account created ✅ Now login!";
+        })
+        .catch(error => {
+          document.getElementById("msg").innerText = error.message;
+        });
     }
-
-    // Register Event
-    async function registerEvent() {
-      const eventName = document.getElementById("eventName").value;
-      await addDoc(collection(db, "events"), { name: eventName });
-      alert("Event Registered!");
-      loadEvents();
-    }
-
-    // Load Events
-    async function loadEvents() {
-      const eventList = document.getElementById("eventList");
-      eventList.innerHTML = "";
-      const querySnapshot = await getDocs(collection(db, "events"));
-      querySnapshot.forEach((doc) => {
-        let li = document.createElement("li");
-        li.textContent = doc.data().name;
-        eventList.appendChild(li);
-      });
-    }
-    loadEvents();
   </script>
 </body>
 </html>
