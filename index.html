@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Event Connect</title>
+</head>
+<body>
+  <h1>🎉 Event Connect</h1>
+  <p>Discover | Register | Share Events</p>
+
+  <!-- Login Section -->
+  <h3>Login / Signup</h3>
+  <input type="email" id="email" placeholder="Enter email">
+  <input type="password" id="password" placeholder="Enter password">
+  <button onclick="signup()">Sign Up</button>
+  <button onclick="login()">Login</button>
+  <button onclick="logout()">Logout</button>
+
+  <hr>
+
+  <!-- Event Registration -->
+  <h3>Register for an Event</h3>
+  <input type="text" id="eventName" placeholder="Enter Event Name">
+  <button onclick="registerEvent()">Register</button>
+
+  <ul id="eventList"></ul>
+
+  <!-- Firebase SDK -->
+  <script type="module">
+    // Import Firebase
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } 
+      from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore, addDoc, collection, getDocs } 
+      from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    // 🔹 Firebase Config (mee Firebase project config ikkada paste cheyyali)
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "XXXXXXX",
+      appId: "YOUR_APP_ID"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // Signup
+    async function signup() {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      await createUserWithEmailAndPassword(auth, email, password);
+      alert("Signup Success!");
+    }
+
+    // Login
+    async function login() {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      await signInWithEmailAndPassword(auth, email, password);
+      alert("Login Success!");
+    }
+
+    // Logout
+    async function logout() {
+      await signOut(auth);
+      alert("Logged Out");
+    }
+
+    // Register Event
+    async function registerEvent() {
+      const eventName = document.getElementById("eventName").value;
+      await addDoc(collection(db, "events"), { name: eventName });
+      alert("Event Registered!");
+      loadEvents();
+    }
+
+    // Load Events
+    async function loadEvents() {
+      const eventList = document.getElementById("eventList");
+      eventList.innerHTML = "";
+      const querySnapshot = await getDocs(collection(db, "events"));
+      querySnapshot.forEach((doc) => {
+        let li = document.createElement("li");
+        li.textContent = doc.data().name;
+        eventList.appendChild(li);
+      });
+    }
+    loadEvents();
+  </script>
+</body>
+</html>
